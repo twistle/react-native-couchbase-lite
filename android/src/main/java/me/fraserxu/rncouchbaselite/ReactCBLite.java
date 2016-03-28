@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.couchbase.lite.Manager;
 import com.couchbase.lite.View;
+import com.couchbase.lite.DatabaseOptions;
 import com.couchbase.lite.android.AndroidContext;
 import com.couchbase.lite.javascript.JavaScriptViewCompiler;
 import com.couchbase.lite.listener.Credentials;
@@ -33,6 +34,28 @@ public class ReactCBLite extends ReactContextBaseJavaModule {
     @Override
     public String getName() {
         return REACT_CLASS;
+    }
+
+    @ReactMethod
+    public void createDatabase(String name, String encryptionKey, Boolean useForestDB) {
+      try {
+        AndroidContext context = new AndroidContext(this.context);
+        Manager manager = new Manager(context, Manager.DEFAULT_OPTIONS);
+
+        //install a view definition needed by the application
+        DatabaseOptions options = new DatabaseOptions();
+        options.setCreate(true);
+        if (encryptionKey != "") {
+          options.setEncryptionKey(encryptionKey);
+          // Encryption requires ForestDB
+          options.setStorageType(Manager.FORESTDB_STORAGE);
+        } else if (useForestDB == true) {
+          options.setStorageType(Manager.FORESTDB_STORAGE);
+        }
+        manager.openDatabase(name, options);
+      } catch (final Exception e) {
+          e.printStackTrace();
+      }
     }
 
     @ReactMethod
