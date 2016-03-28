@@ -45,7 +45,7 @@ public class ReactCBLite extends ReactContextBaseJavaModule {
         //install a view definition needed by the application
         DatabaseOptions options = new DatabaseOptions();
         options.setCreate(true);
-        if (encryptionKey != "") {
+        if (encryptionKey.length() > 0) {
           options.setEncryptionKey(encryptionKey);
           // Encryption requires ForestDB
           options.setStorageType(Manager.FORESTDB_STORAGE);
