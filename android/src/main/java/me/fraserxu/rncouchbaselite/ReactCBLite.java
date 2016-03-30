@@ -21,6 +21,7 @@ public class ReactCBLite extends ReactContextBaseJavaModule {
 
     public static final String REACT_CLASS = "ReactCBLite";
     private static final int DEFAULT_LISTEN_PORT = 5984;
+    private static final String STORAGE_TYPE_FORESTDB = "ForestDB";
     private final String TAG = "ReactCBLite";
     private ReactApplicationContext context;
     private int listenPort;
@@ -34,30 +35,6 @@ public class ReactCBLite extends ReactContextBaseJavaModule {
     @Override
     public String getName() {
         return REACT_CLASS;
-    }
-
-    @ReactMethod
-    public void createDatabase(String name, String encryptionKey, Boolean useForestDB) {
-      try {
-        AndroidContext context = new AndroidContext(this.context);
-        Manager manager = new Manager(context, Manager.DEFAULT_OPTIONS);
-
-        //install a view definition needed by the application
-        DatabaseOptions options = new DatabaseOptions();
-        options.setCreate(true);
-        if (encryptionKey.length() > 0) {
-          options.setEncryptionKey(encryptionKey);
-          // Encryption requires ForestDB
-          options.setStorageType(Manager.FORESTDB_STORAGE);
-          Log.i(TAG, "initializing encrypted ForestDB database " + name);
-        } else if (useForestDB == true) {
-          Log.i(TAG, "initializing ForestDB database " + name);
-          options.setStorageType(Manager.FORESTDB_STORAGE);
-        }
-        manager.openDatabase(name, options);
-      } catch (final Exception e) {
-          e.printStackTrace();
-      }
     }
 
     @ReactMethod
@@ -84,6 +61,7 @@ public class ReactCBLite extends ReactContextBaseJavaModule {
             Manager.enableLogging(Log.TAG_REMOTE_REQUEST, Log.VERBOSE);
             Manager.enableLogging(Log.TAG_ROUTER, Log.VERBOSE);
             Manager manager = new Manager(context, Manager.DEFAULT_OPTIONS);
+            manager.setStorageType(STORAGE_TYPE_FORESTDB);
 
             listenPort = startCBLListener(listenPort, manager, allowedCredentials);
 
